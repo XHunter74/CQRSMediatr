@@ -44,6 +44,10 @@ From sources:
    dotnet test
    ```
 
+## Badges
+
+[![NuGet](https://img.shields.io/nuget/v/cqrs-mediatr)](https://www.nuget.org/packages/cqrs-mediatr)
+
 ### Usage
 
 1. Define your commands and queries by implementing `ICommand` and `IQuery` interfaces.
