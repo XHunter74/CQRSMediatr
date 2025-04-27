@@ -23,7 +23,9 @@ CQRSMediatr is a .NET library that implements the Command Query Responsibility S
 ### Installation
 
 1. From NuGet package repository:
+   ```bash
    dotnet add package cqrs-mediatr
+   ```
 
 From sources:
 1. Clone the repository:
