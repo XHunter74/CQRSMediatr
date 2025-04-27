@@ -4,6 +4,15 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <PackageId>cqrs-mediatr</PackageId>
+    <Title>Simple implementation of mediatr pattern</Title>
+    <Version>1.0.0</Version>
+    <Authors>xhunter74</Authors>
+    <Description>CQRSMediatr is a .NET library that implements the Command Query Responsibility Segregation (CQRS) pattern using the Mediator design pattern. It provides interfaces and base implementations to simplify the development of CQRS-based applications.</Description>
+    <Copyright>xhunter74@gmail.com</Copyright>
+    <PackageProjectUrl>https://github.com/XHunter74/CQRSMediatr</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/XHunter74/CQRSMediatr</RepositoryUrl>
+    <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
