@@ -1,3 +1,5 @@
+[![NuGet](https://img.shields.io/nuget/v/cqrs-mediatr)](https://www.nuget.org/packages/cqrs-mediatr)
+
 # CQRSMediatr
 
 CQRSMediatr is a .NET library that implements the Command Query Responsibility Segregation (CQRS) pattern using the Mediator design pattern. It provides interfaces and base implementations to simplify the development of CQRS-based applications.
@@ -43,10 +45,6 @@ From sources:
    ```bash
    dotnet test
    ```
-
-## Badges
-
-[![NuGet](https://img.shields.io/nuget/v/cqrs-mediatr)](https://www.nuget.org/packages/cqrs-mediatr)
 
 ### Usage
 
