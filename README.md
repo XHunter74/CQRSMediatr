@@ -1,5 +1,5 @@
-[![NuGet](https://img.shields.io/nuget/v/cqrs-mediatr)](https://www.nuget.org/packages/cqrs-mediatr)
-[![NuGet Downloads](https://img.shields.io/nuget/dt/cqrs-mediatr.svg)](https://www.nuget.org/packages/cqrs-mediatr/)
+[![NuGet Version](https://badgen.net/nuget/v/cqrs-mediatr)](https://www.nuget.org/packages/cqrs-mediatr/)
+[![NuGet Downloads](https://badgen.net/nuget/dt/cqrs-mediatr)](https://www.nuget.org/packages/cqrs-mediatr/)
 
 # CQRSMediatr
 
