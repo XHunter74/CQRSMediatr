@@ -1,5 +1,7 @@
 using CQRSMediatr.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.VisualStudio.TestPlatform.TestHost;
+using MultiTenantDbContext.CQRS;
 
 namespace CQRSMediatr.Test;
 
@@ -29,11 +31,11 @@ public class CqrsMediatrTests
     public async Task QueryAsync_Should_Invoke_Handler()
     {
         // Arrange
-        var serviceProvider = new ServiceCollection()
-            .AddScoped<IQueryHandler<TestQuery, string>, TestQueryHandler>()
-            .BuildServiceProvider();
+        var services = new ServiceCollection();
+        services.AddCqrsMediatr(typeof(CqrsMediatrTests));
+        var serviceProvider = services.BuildServiceProvider();
 
-        var mediatr = new CqrsMediatr(serviceProvider);
+        var mediatr = serviceProvider.GetRequiredService<ICqrsMediatr>();
 
         var query = new TestQuery();
 
@@ -48,11 +50,11 @@ public class CqrsMediatrTests
     public async Task SendAsync_Should_Invoke_Handler()
     {
         // Arrange
-        var serviceProvider = new ServiceCollection()
-            .AddScoped<ICommandHandler<TestCommand, string>, TestCommandHandler>()
-            .BuildServiceProvider();
+        var services = new ServiceCollection();
+        services.AddCqrsMediatr(typeof(CqrsMediatrTests));
+        var serviceProvider = services.BuildServiceProvider();
 
-        var mediatr = new CqrsMediatr(serviceProvider);
+        var mediatr = serviceProvider.GetRequiredService<ICqrsMediatr>();
 
         var command = new TestCommand();
 
