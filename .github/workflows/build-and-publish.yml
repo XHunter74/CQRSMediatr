@@ -96,13 +96,18 @@ jobs:
       if: env.IS_TAG == 'true'
       shell: pwsh
       run: |
-          Start-Process -FilePath ./nuget.exe -ArgumentList @(
-            "sign",
-            "CQRSMediatr/bin/Release/*.nupkg",
-            "-CertificatePath", "mycert.pfx",
-            "-CertificatePassword", "${{ secrets.CERT_PASSWORD }}",
-            "-Timestamper", "http://timestamp.digicert.com"
-          ) -Wait -NoNewWindow
+          $packages = Get-ChildItem "CQRSMediatr/bin/Release" -Filter *.nupkg | Select-Object -ExpandProperty FullName
+      
+          foreach ($pkg in $packages) {
+            Start-Process -FilePath ./nuget.exe -ArgumentList @(
+              "sign",
+              "$pkg",
+              "-CertificatePath", "mycert.pfx",
+              "-CertificatePassword", "${{ secrets.CERT_PASSWORD }}",
+              "-Timestamper", "http://timestamp.digicert.com"
+            ) -Wait -NoNewWindow
+          }
+      
 
     - name: Publish to NuGet
       if: env.IS_TAG == 'true'
