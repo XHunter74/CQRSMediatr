@@ -83,17 +83,17 @@ jobs:
             -p:PackageVersion=$VERSION
         fi
     
-    - name: Install NuGet CLI
+    - name: Download nuget.exe
       if: env.IS_TAG == 'true'
       run: |
-        dotnet tool install --global NuGet.CommandLine
+          curl -L -o nuget.exe https://dist.nuget.org/win-x86-commandline/latest/nuget.exe
     
     - name: Sign NuGet package
       if: env.IS_TAG == 'true'
       run: |
-        nuget sign CQRSMediatr/bin/Release/*.nupkg \
-          -CertificatePath mycert.pfx \
-          -Timestamper http://timestamp.digicert.com
+          mono nuget.exe sign CQRSMediatr/bin/Release/*.nupkg \
+            -CertificatePath mycert.pfx \
+            -Timestamper http://timestamp.digicert.com
 
     - name: Publish to NuGet (only on tag)
       if: env.IS_TAG == 'true'
