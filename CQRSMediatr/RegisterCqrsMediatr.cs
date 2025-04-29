@@ -1,9 +1,8 @@
-﻿using CQRSMediatr;
-using CQRSMediatr.Interfaces;
+﻿using CQRSMediatr.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 
-namespace MultiTenantDbContext.CQRS;
+namespace CQRSMediatr;
 
 public static class RegisterCqrsMediatr
 {

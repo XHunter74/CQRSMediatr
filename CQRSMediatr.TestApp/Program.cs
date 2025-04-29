@@ -1,11 +1,10 @@
 ﻿using CQRSMediatr.Interfaces;
 using CQRSMediatr.TestApp.Features;
 using Microsoft.Extensions.DependencyInjection;
-using MultiTenantDbContext.CQRS;
 
 namespace CQRSMediatr.TestApp;
 
-public class Program
+public static class Program
 {
     public static async Task Main(string[] args)
     {

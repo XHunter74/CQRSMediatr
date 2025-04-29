@@ -1,1 +1,2 @@
 Added .ConfigureAwait(false) to handlers call.
+Fixed namespace for AddCqrsMediatr

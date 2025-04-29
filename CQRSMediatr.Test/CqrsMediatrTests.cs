@@ -1,7 +1,5 @@
 using CQRSMediatr.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.VisualStudio.TestPlatform.TestHost;
-using MultiTenantDbContext.CQRS;
 
 namespace CQRSMediatr.Test;
 
