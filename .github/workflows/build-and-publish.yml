@@ -82,17 +82,18 @@ jobs:
           dotnet pack CQRSMediatr/CQRSMediatr.csproj --configuration Release --no-build \
             -p:PackageVersion=$VERSION
         fi
-        - name: Install NuGet CLI
-        if: env.IS_TAG == 'true'
-        run: |
-          dotnet tool install --global NuGet.CommandLine
-      
-        - name: Sign NuGet package
-        if: env.IS_TAG == 'true'
-        run: |
-          nuget sign CQRSMediatr/bin/Release/*.nupkg \
-            -CertificatePath mycert.pfx \
-            -Timestamper http://timestamp.digicert.com
+    
+    - name: Install NuGet CLI
+      if: env.IS_TAG == 'true'
+      run: |
+        dotnet tool install --global NuGet.CommandLine
+    
+    - name: Sign NuGet package
+      if: env.IS_TAG == 'true'
+      run: |
+        nuget sign CQRSMediatr/bin/Release/*.nupkg \
+          -CertificatePath mycert.pfx \
+          -Timestamper http://timestamp.digicert.com
 
     - name: Publish to NuGet (only on tag)
       if: env.IS_TAG == 'true'
