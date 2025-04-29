@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   build-test-publish:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
     - name: Checkout code
@@ -83,22 +83,15 @@ jobs:
             -p:PackageVersion=$VERSION
         fi
     
-    - name: Install Mono
-      if: env.IS_TAG == 'true'
+    - name: Install NuGet CLI
       run: |
-          sudo apt update
-          sudo apt install -y mono-devel
-
-    - name: Download nuget.exe
-      if: env.IS_TAG == 'true'
-      run: |
-          curl -L -o nuget.exe https://dist.nuget.org/win-x86-commandline/latest/nuget.exe
-    
+          choco install nuget.commandline
+      
     - name: Sign NuGet package
-      if: env.IS_TAG == 'true'
       run: |
-          mono nuget.exe sign CQRSMediatr/bin/Release/*.nupkg \
-            -CertificatePath mycert.pfx \
+          nuget sign CQRSMediatr/bin/Release/*.nupkg `
+            -CertificatePath mycert.pfx `
+            -CertificatePassword ${{ secrets.CERT_PASSWORD }} `
             -Timestamper http://timestamp.digicert.com
 
     - name: Publish to NuGet (only on tag)
