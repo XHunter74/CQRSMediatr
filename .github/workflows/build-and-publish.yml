@@ -62,8 +62,8 @@ jobs:
     - name: Decode PFX Certificate
       shell: pwsh
       run: |
-        [System.Convert]::FromBase64String("${{ secrets.NUGET_CERT_BASE64 }}") | Set-Content -Encoding Byte mycert.pfx
-
+        [IO.File]::WriteAllBytes("mycert.pfx", [Convert]::FromBase64String("${{ secrets.NUGET_CERT_BASE64 }}"))
+    
     - name: Build project
       run: dotnet build CQRSMediatr/CQRSMediatr.csproj --configuration Release --no-restore
 
