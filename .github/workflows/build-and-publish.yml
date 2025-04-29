@@ -96,10 +96,13 @@ jobs:
       if: env.IS_TAG == 'true'
       shell: pwsh
       run: |
-        ./nuget.exe sign CQRSMediatr/bin/Release/*.nupkg `
-          -CertificatePath mycert.pfx `
-          -CertificatePassword ${{ secrets.CERT_PASSWORD }} `
-          -Timestamper http://timestamp.digicert.com
+          Start-Process -FilePath ./nuget.exe -ArgumentList @(
+            "sign",
+            "CQRSMediatr/bin/Release/*.nupkg",
+            "-CertificatePath", "mycert.pfx",
+            "-CertificatePassword", "${{ secrets.CERT_PASSWORD }}",
+            "-Timestamper", "http://timestamp.digicert.com"
+          ) -Wait -NoNewWindow
 
     - name: Publish to NuGet
       if: env.IS_TAG == 'true'
