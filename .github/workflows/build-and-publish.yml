@@ -35,9 +35,8 @@ jobs:
       run: |
         if [ -f release-notes.txt ]; then
           echo "RELEASE_NOTES_EXISTS=true" >> $GITHUB_ENV
-          echo "RELEASE_NOTES<<EOF" >> $GITHUB_ENV
-          cat release-notes.txt >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
+          RELEASE_NOTES=$(sed ':a;N;$!ba;s/\n/\\n/g' release-notes.txt)
+          echo "RELEASE_NOTES=$RELEASE_NOTES" >> $GITHUB_ENV
         else
           echo "RELEASE_NOTES_EXISTS=false" >> $GITHUB_ENV
         fi
