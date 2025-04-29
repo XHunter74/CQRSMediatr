@@ -57,6 +57,10 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
 
+    - name: Decode PFX Certificate
+      run: |
+        echo "${{ secrets.NUGET_CERT_BASE64 }}" | base64 -d > mycert.pfx
+
     - name: Build project
       run: dotnet build CQRSMediatr/CQRSMediatr.csproj --configuration Release --no-restore
 
@@ -72,10 +76,16 @@ jobs:
       run: |
         if [ "$RELEASE_NOTES_EXISTS" == "true" ]; then
           dotnet pack CQRSMediatr/CQRSMediatr.csproj --configuration Release --no-build \
+            -p:AssemblyOriginatorKeyFile=mycert.pfx \
+            -p:SignAssembly=true \
+            -p:PublicSign=false \
             -p:PackageVersion=$VERSION \
             -p:PackageReleaseNotes="$RELEASE_NOTES"
         else
           dotnet pack CQRSMediatr/CQRSMediatr.csproj --configuration Release --no-build \
+            -p:AssemblyOriginatorKeyFile=mycert.pfx \
+            -p:SignAssembly=true \
+            -p:PublicSign=false \
             -p:PackageVersion=$VERSION
         fi
 
