@@ -67,8 +67,12 @@ jobs:
     - name: Build project
       run: dotnet build CQRSMediatr/CQRSMediatr.csproj --configuration Release --no-restore
 
+    - name: Build test project
+      run: dotnet build CQRSMediatr.Test/CQRSMediatr.Test.csproj --configuration Release
+    
     - name: Run tests
       run: dotnet test CQRSMediatr.Test/CQRSMediatr.Test.csproj --configuration Release --no-build --verbosity normal
+    
 
     - name: Pack NuGet package (only on tag)
       if: env.IS_TAG == 'true'
