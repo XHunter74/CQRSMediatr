@@ -20,14 +20,13 @@ jobs:
       with:
         dotnet-version: '8.0.x'
 
-    - name: Extract version from tag (if present)
-      id: extract-version
+    - name: Detect version tag
+      id: detect-version
       run: |
         if [[ "${GITHUB_REF}" == refs/tags/v* ]]; then
-          echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
           echo "IS_TAG=true" >> $GITHUB_ENV
+          echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
         else
-          echo "VERSION=dev" >> $GITHUB_ENV
           echo "IS_TAG=false" >> $GITHUB_ENV
         fi
 
@@ -43,35 +42,35 @@ jobs:
           echo "RELEASE_NOTES_EXISTS=false" >> $GITHUB_ENV
         fi
 
-    - name: Update .csproj version and release notes
+    - name: Update version and release notes in .csproj (only on tag)
+      if: env.IS_TAG == 'true'
       run: |
-        if [ "$VERSION" != "dev" ]; then
-          sed -i "s|<Version>.*</Version>|<Version>${VERSION}</Version>|" CQRSMediatr/CQRSMediatr.csproj
-        fi
+        sed -i "s|<Version>.*</Version>|<Version>${VERSION}</Version>|" CQRSMediatr/CQRSMediatr.csproj
 
         if [ "$RELEASE_NOTES_EXISTS" == "true" ]; then
-          RELEASE_NOTES_ESCAPED=$(echo "${RELEASE_NOTES}" | sed 's/[&/\]/\\&/g')
+          RELEASE_NOTES_ESCAPED=$(echo "$RELEASE_NOTES" | sed 's/[&/\]/\\&/g')
           sed -i "s|<PackageReleaseNotes>.*</PackageReleaseNotes>|<PackageReleaseNotes>${RELEASE_NOTES_ESCAPED}</PackageReleaseNotes>|" CQRSMediatr/CQRSMediatr.csproj
         fi
 
-    - name: Commit changes to .csproj if needed
+    - name: Commit updated .csproj (only on tag)
+      if: env.IS_TAG == 'true'
       run: |
         git config user.name "github-actions[bot]"
         git config user.email "github-actions[bot]@users.noreply.github.com"
         git add CQRSMediatr/CQRSMediatr.csproj || true
-        git commit -m "[skip ci] Update version/release notes to $VERSION" || echo "No changes to commit"
+        git commit -m "[skip ci] Update version and release notes for $VERSION" || echo "No changes to commit"
         git push origin HEAD:master || echo "No changes pushed"
 
     - name: Restore dependencies
       run: dotnet restore
 
-    - name: Build library
+    - name: Build project
       run: dotnet build CQRSMediatr/CQRSMediatr.csproj --configuration Release --no-restore
 
     - name: Run tests
       run: dotnet test CQRSMediatr.Test/CQRSMediatr.Test.csproj --configuration Release --no-build --verbosity normal
 
-    - name: Pack NuGet (if version tag exists)
+    - name: Pack NuGet package (only on tag)
       if: env.IS_TAG == 'true'
       run: |
         if [ "$RELEASE_NOTES_EXISTS" == "true" ]; then
@@ -83,7 +82,7 @@ jobs:
             -p:PackageVersion=$VERSION
         fi
 
-    - name: Publish to NuGet
+    - name: Publish to NuGet (only on tag)
       if: env.IS_TAG == 'true'
       env:
         NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
