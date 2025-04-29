@@ -7,9 +7,6 @@ on:
     tags:
       - "v*"
 
-permissions:
-  contents: write
-
 jobs:
   build-test-publish:
     runs-on: windows-latest
@@ -25,41 +22,47 @@ jobs:
 
     - name: Detect version tag
       id: detect-version
+      shell: pwsh
       run: |
-        if [[ "${GITHUB_REF}" == refs/tags/v* ]]; then
-          echo "IS_TAG=true" >> $GITHUB_ENV
-          echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
-        else
-          echo "IS_TAG=false" >> $GITHUB_ENV
-        fi
+        if ($env:GITHUB_REF -like 'refs/tags/v*') {
+          echo "IS_TAG=true" >> $env:GITHUB_ENV
+          echo "VERSION=$($env:GITHUB_REF -replace 'refs/tags/v', '')" >> $env:GITHUB_ENV
+        } else {
+          echo "IS_TAG=false" >> $env:GITHUB_ENV
+        }
 
     - name: Check for release notes
       id: check-release-notes
+      shell: pwsh
       run: |
-        if [ -f release-notes.txt ]; then
-          echo "RELEASE_NOTES_EXISTS=true" >> $GITHUB_ENV
-          RELEASE_NOTES=$(sed ':a;N;$!ba;s/\n/\\n/g' release-notes.txt)
-          echo "RELEASE_NOTES=$RELEASE_NOTES" >> $GITHUB_ENV
-        else
-          echo "RELEASE_NOTES_EXISTS=false" >> $GITHUB_ENV
-        fi
+        if (Test-Path release-notes.txt) {
+          echo "RELEASE_NOTES_EXISTS=true" >> $env:GITHUB_ENV
+          $content = Get-Content release-notes.txt -Raw
+          $escaped = $content -replace "`r`n", "\n" -replace "`n", "\n"
+          echo "RELEASE_NOTES=$escaped" >> $env:GITHUB_ENV
+        } else {
+          echo "RELEASE_NOTES_EXISTS=false" >> $env:GITHUB_ENV
+        }
 
     - name: Update version and release notes in .csproj (only on tag)
       if: env.IS_TAG == 'true'
+      shell: pwsh
       run: |
-        sed -i "s|<Version>.*</Version>|<Version>${VERSION}</Version>|" CQRSMediatr/CQRSMediatr.csproj
-
-        if [ "$RELEASE_NOTES_EXISTS" == "true" ]; then
-          RELEASE_NOTES_ESCAPED=$(echo "$RELEASE_NOTES" | sed 's/[&/\]/\\&/g')
-          sed -i "s|<PackageReleaseNotes>.*</PackageReleaseNotes>|<PackageReleaseNotes>${RELEASE_NOTES_ESCAPED}</PackageReleaseNotes>|" CQRSMediatr/CQRSMediatr.csproj
-        fi
+        $csproj = "CQRSMediatr/CQRSMediatr.csproj"
+        (Get-Content $csproj) -replace '<Version>.*</Version>', "<Version>$env:VERSION</Version>" |
+          Set-Content $csproj
+        if ($env:RELEASE_NOTES_EXISTS -eq "true") {
+          (Get-Content $csproj) -replace '<PackageReleaseNotes>.*</PackageReleaseNotes>', "<PackageReleaseNotes>$env:RELEASE_NOTES</PackageReleaseNotes>" |
+            Set-Content $csproj
+        }
 
     - name: Restore dependencies
       run: dotnet restore
 
     - name: Decode PFX Certificate
+      shell: pwsh
       run: |
-        echo "${{ secrets.NUGET_CERT_BASE64 }}" | base64 -d > mycert.pfx
+        [System.Convert]::FromBase64String("${{ secrets.NUGET_CERT_BASE64 }}") | Set-Content -Encoding Byte mycert.pfx
 
     - name: Build project
       run: dotnet build CQRSMediatr/CQRSMediatr.csproj --configuration Release --no-restore
@@ -69,37 +72,40 @@ jobs:
     
     - name: Run tests
       run: dotnet test CQRSMediatr.Test/CQRSMediatr.Test.csproj --configuration Release --no-build --verbosity normal
-    
 
     - name: Pack NuGet package (only on tag)
       if: env.IS_TAG == 'true'
+      shell: pwsh
       run: |
-        if [ "$RELEASE_NOTES_EXISTS" == "true" ]; then
-          dotnet pack CQRSMediatr/CQRSMediatr.csproj --configuration Release --no-build \
-            -p:PackageVersion=$VERSION \
-            -p:PackageReleaseNotes="$RELEASE_NOTES"
-        else
-          dotnet pack CQRSMediatr/CQRSMediatr.csproj --configuration Release --no-build \
-            -p:PackageVersion=$VERSION
-        fi
-    
-    - name: Install NuGet CLI
-      run: |
-          choco install nuget.commandline
-      
-    - name: Sign NuGet package
-      run: |
-          nuget sign CQRSMediatr/bin/Release/*.nupkg `
-            -CertificatePath mycert.pfx `
-            -CertificatePassword ${{ secrets.CERT_PASSWORD }} `
-            -Timestamper http://timestamp.digicert.com
+        if ($env:RELEASE_NOTES_EXISTS -eq "true") {
+          dotnet pack CQRSMediatr/CQRSMediatr.csproj --configuration Release --no-build `
+            -p:PackageVersion=$env:VERSION `
+            -p:PackageReleaseNotes="$env:RELEASE_NOTES"
+        } else {
+          dotnet pack CQRSMediatr/CQRSMediatr.csproj --configuration Release --no-build `
+            -p:PackageVersion=$env:VERSION
+        }
 
-    - name: Publish to NuGet (only on tag)
+    - name: Download nuget.exe
+      if: env.IS_TAG == 'true'
+      shell: pwsh
+      run: |
+        Invoke-WebRequest https://dist.nuget.org/win-x86-commandline/latest/nuget.exe -OutFile nuget.exe
+
+    - name: Sign NuGet package
+      if: env.IS_TAG == 'true'
+      shell: pwsh
+      run: |
+        ./nuget.exe sign CQRSMediatr/bin/Release/*.nupkg `
+          -CertificatePath mycert.pfx `
+          -CertificatePassword ${{ secrets.CERT_PASSWORD }} `
+          -Timestamper http://timestamp.digicert.com
+
+    - name: Publish to NuGet
       if: env.IS_TAG == 'true'
       env:
         NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
       run: |
-        echo "Publishing to NuGet..."
-        dotnet nuget push CQRSMediatr/bin/Release/*.nupkg \
-          --api-key $NUGET_API_KEY \
+        dotnet nuget push CQRSMediatr/bin/Release/*.nupkg `
+          --api-key $env:NUGET_API_KEY `
           --source https://api.nuget.org/v3/index.json
