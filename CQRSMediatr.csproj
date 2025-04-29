@@ -17,6 +17,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>CQRS Mediatr</PackageTags>
     <PackageReleaseNotes>$(RELEASE_NOTES)</PackageReleaseNotes>
+    <PackageTags>CQRS, Mediator, Dependency Injection, Command Query Responsibility Segregation, Design Patterns, C#, Library, Open Source</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

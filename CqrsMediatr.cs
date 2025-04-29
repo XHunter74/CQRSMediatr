@@ -17,7 +17,7 @@ public class CqrsMediatr : ICqrsMediatr
         var handlerType = typeof(IQueryHandler<,>).MakeGenericType(query.GetType(), typeof(TResult));
         dynamic handler = _serviceProvider.GetRequiredService(handlerType);
 
-        return await handler.HandleAsync((dynamic)query);
+        return await handler.HandleAsync((dynamic)query).ConfigureAwait(false);
     }
 
     public async Task<TResult> SendAsync<TResult>(ICommand<TResult> command)
@@ -25,6 +25,6 @@ public class CqrsMediatr : ICqrsMediatr
         var handlerType = typeof(ICommandHandler<,>).MakeGenericType(command.GetType(), typeof(TResult));
         dynamic handler = _serviceProvider.GetRequiredService(handlerType);
 
-        return await handler.HandleAsync((dynamic)command);
+        return await handler.HandleAsync((dynamic)command).ConfigureAwait(false);
     }
 }
