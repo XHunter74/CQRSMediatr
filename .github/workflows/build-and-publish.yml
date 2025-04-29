@@ -91,6 +91,7 @@ jobs:
       env:
         NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
       run: |
-        dotnet nuget push CQRSMediatr/bin/Release/*.nupkg \
-          --api-key $NUGET_API_KEY \
-          --source https://api.nuget.org/v3/index.json
+        echo "Publishing to NuGet..."
+        # dotnet nuget push CQRSMediatr/bin/Release/*.nupkg \
+        #   --api-key $NUGET_API_KEY \
+        #   --source https://api.nuget.org/v3/index.json
