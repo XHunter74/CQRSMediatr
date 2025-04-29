@@ -83,6 +83,12 @@ jobs:
             -p:PackageVersion=$VERSION
         fi
     
+    - name: Install Mono
+      if: env.IS_TAG == 'true'
+      run: |
+          sudo apt update
+          sudo apt install -y mono-devel
+
     - name: Download nuget.exe
       if: env.IS_TAG == 'true'
       run: |
