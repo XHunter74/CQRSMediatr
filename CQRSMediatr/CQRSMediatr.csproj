@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
     <PackageId>cqrs-mediatr</PackageId>
     <Title>Simple implementation of mediatr pattern</Title>
-    <Version>1.0.1</Version>
+    <Version>$(VERSION)</Version>
     <Authors>xhunter74</Authors>
     <Description>CQRSMediatr is a .NET library that implements the Command Query Responsibility Segregation (CQRS) pattern using the Mediator design pattern. It provides interfaces and base implementations to simplify the development of CQRS-based applications.</Description>
     <Copyright>xhunter74@gmail.com</Copyright>
@@ -16,7 +16,7 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryType>git</RepositoryType>
     <PackageTags>CQRS Mediatr</PackageTags>
-    <PackageReleaseNotes>Added .ConfigureAwait(false) to handlers call.</PackageReleaseNotes>
+    <PackageReleaseNotes>$(RELEASE_NOTES)</PackageReleaseNotes>
     <PackageTags>CQRS, Mediator, Dependency Injection, Command Query Responsibility Segregation, Design Patterns, C#, Library, Open Source</PackageTags>
   </PropertyGroup>
 
