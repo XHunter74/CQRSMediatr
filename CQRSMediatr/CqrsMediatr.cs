@@ -12,19 +12,19 @@ public class CqrsMediatr : ICqrsMediatr
         _serviceProvider = serviceProvider;
     }
 
-    public async Task<TResult> QueryAsync<TResult>(IQuery<TResult> query)
+    public async Task<TResult> QueryAsync<TResult>(IQuery<TResult> query, CancellationToken cancellationToken = default)
     {
         var handlerType = typeof(IQueryHandler<,>).MakeGenericType(query.GetType(), typeof(TResult));
         dynamic handler = _serviceProvider.GetRequiredService(handlerType);
 
-        return await handler.HandleAsync((dynamic)query).ConfigureAwait(false);
+        return await handler.HandleAsync((dynamic)query, cancellationToken).ConfigureAwait(false);
     }
 
-    public async Task<TResult> SendAsync<TResult>(ICommand<TResult> command)
+    public async Task<TResult> SendAsync<TResult>(ICommand<TResult> command, CancellationToken cancellationToken = default)
     {
         var handlerType = typeof(ICommandHandler<,>).MakeGenericType(command.GetType(), typeof(TResult));
         dynamic handler = _serviceProvider.GetRequiredService(handlerType);
 
-        return await handler.HandleAsync((dynamic)command).ConfigureAwait(false);
+        return await handler.HandleAsync((dynamic)command, cancellationToken).ConfigureAwait(false);
     }
 }

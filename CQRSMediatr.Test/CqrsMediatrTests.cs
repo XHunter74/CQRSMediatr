@@ -7,7 +7,7 @@ public class TestQuery : IQuery<string> { }
 
 public class TestQueryHandler : IQueryHandler<TestQuery, string>
 {
-    public Task<string> HandleAsync(TestQuery query)
+    public Task<string> HandleAsync(TestQuery query, CancellationToken cancellationToken)
     {
         return Task.FromResult("Test Result");
     }
@@ -17,7 +17,7 @@ public class TestCommand : ICommand<string> { }
 
 public class TestCommandHandler : ICommandHandler<TestCommand, string>
 {
-    public Task<string> HandleAsync(TestCommand command)
+    public Task<string> HandleAsync(TestCommand command, CancellationToken cancellationToken)
     {
         return Task.FromResult("Command Result");
     }
