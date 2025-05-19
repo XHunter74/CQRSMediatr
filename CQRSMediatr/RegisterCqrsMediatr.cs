@@ -4,8 +4,17 @@ using System.Reflection;
 
 namespace CQRSMediatr;
 
+/// <summary>
+/// Provides extension methods for registering CQRS Mediatr handlers and services.
+/// </summary>
 public static class RegisterCqrsMediatr
 {
+    /// <summary>
+    /// Registers CQRS Mediatr services and all command/query handlers found in the assembly of the specified type.
+    /// </summary>
+    /// <param name="services">The service collection to add registrations to.</param>
+    /// <param name="type">A type from the assembly to scan for handlers.</param>
+    /// <returns>The updated service collection.</returns>
     public static IServiceCollection AddCqrsMediatr(this IServiceCollection services, Type type)
     {
         var assembly = Assembly.GetAssembly(type);
