@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="CQRSMediatr.Test/CQRSMediatr.Test.csproj" />
+  <Project Path="CQRSMediatr.TestApp/CQRSMediatr.TestApp.csproj" />
+  <Project Path="CQRSMediatr/CQRSMediatr.csproj" />
+</Solution>
